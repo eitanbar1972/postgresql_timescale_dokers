@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   pg2-primary:
-    image: bitnami/postgresql:17
+    image: postgres:17
     container_name: pg2-primary
     environment:
       - POSTGRESQL_USERNAME=postgres
@@ -17,7 +17,7 @@ services:
       - pgcluster2_primary_data:/bitnami/postgresql
 
   pg2-replica:
-    image: bitnami/postgresql:17
+    image: postgres:17
     container_name: pg2-replica
     depends_on:
       - pg2-primary
