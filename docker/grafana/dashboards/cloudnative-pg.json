@@ -1,0 +1,19 @@
+{
+  "annotations": {"list": []},
+  "description": "CloudNativePG minimal dashboard placeholder",
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [],
+  "schemaVersion": 27,
+  "style": "dark",
+  "tags": ["cloudnativepg", "timescaledb"],
+  "templating": {"list": []},
+  "time": {"from": "now-6h", "to": "now"},
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "CloudNativePG (placeholder)",
+  "version": 1
+}

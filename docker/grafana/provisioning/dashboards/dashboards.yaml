@@ -1,0 +1,9 @@
+apiVersion: 1
+providers:
+  - name: 'CloudNativePG'
+    orgId: 1
+    folder: 'CloudNativePG'
+    type: file
+    disableDeletion: false
+    options:
+      path: /var/lib/grafana/dashboards

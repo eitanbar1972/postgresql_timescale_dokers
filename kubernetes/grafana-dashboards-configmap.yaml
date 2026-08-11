@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-cloudnativepg
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  cloudnative-pg.json: |
+    {
+      "annotations": {"list": []},
+      "description": "CloudNativePG minimal dashboard placeholder (from configmap)",
+      "editable": true,
+      "gnetId": null,
+      "graphTooltip": 0,
+      "id": null,
+      "links": [],
+      "panels": [],
+      "schemaVersion": 27,
+      "style": "dark",
+      "tags": ["cloudnativepg", "timescaledb"],
+      "templating": {"list": []},
+      "time": {"from": "now-6h", "to": "now"},
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "CloudNativePG (placeholder from configmap)",
+      "version": 1
+    }
