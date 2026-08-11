@@ -8,7 +8,7 @@ metadata:
   # ⚠️  IMPORTANT: If you change "timescale-ai here, you MUST also update the matching name in cluster-timescaledb.yaml
   # Both files must use the same catalog name for the cluster to find the image definition
   name: timescale-ai
-  namespace: timescaledb
+  namespace: default
 spec:
   images:
     # PostgreSQL 17 image with TimescaleDB, pgvector, and pgvectorscale extensions
@@ -22,7 +22,7 @@ spec:
     # Replace IMAGE_NAME with your image repository name
     # Replace IMAGE_TAG with your image tag (e.g., pg17-latest, pg17-v1.0.0)
     # ⚠️  IMPORTANT: Replace REGISTRY/IMAGE_NAME:IMAGE_TAG before applying this manifest
-    image: REGISTRY/IMAGE_NAME:IMAGE_TAG
+    image: docker.io/eitanbar100/timescaledb-pgvector:pg17-latest
 
   # =============================================================================
   # Optional: Add additional PostgreSQL versions to the catalog

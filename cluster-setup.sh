@@ -3,13 +3,12 @@
 # TimescaleDB Cluster Setup Script
 # =============================================================================
 # Deploys TimescaleDB cluster with pgvector and pgvectorscale on Kubernetes
-# 
+#
 # Steps:
 #   1. Create namespace
-#   2. Deploy custom image catalog
-#   3. Deploy 3-pod TimescaleDB cluster
-#   4. Wait for cluster readiness
-#   5. Verify deployment
+#   2. Deploy the CloudNativePG cluster manifest
+#   3. Wait for cluster readiness
+#   4. Verify deployment
 # =============================================================================
 
 set -e
@@ -63,19 +62,13 @@ kubectl apply -f kubernetes/namespace.yaml
 print_success "Namespace created"
 echo ""
 
-# Step 2: Deploy image catalog
-print_info "Deploying custom image catalog..."
-kubectl apply -f kubernetes/imagecatalog-timescaledb.yaml
-print_success "Image catalog deployed"
-echo ""
-
-# Step 3: Deploy cluster
-print_info "Deploying TimescaleDB cluster (3 pods)..."
+# Step 2: Deploy cluster
+print_info "Deploying TimescaleDB cluster..."
 kubectl apply -f kubernetes/cluster-timescaledb.yaml
 print_success "Cluster manifest applied"
 echo ""
 
-# Step 4: Wait for cluster to be ready
+# Step 3: Wait for cluster to be ready
 print_info "Waiting for cluster to initialize (this may take 2-3 minutes)..."
 echo ""
 

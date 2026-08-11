@@ -1,6 +1,10 @@
 # TimescaleDB + pgvectorscale for AI on Kubernetes
 
-## � Getting Started
+## Deployment guide
+
+For the newer CloudNativePG image-based deployment flow, see [BUILD_AND_DEPLOY.md](BUILD_AND_DEPLOY.md).
+
+## Getting Started
 
 Before deploying to Kubernetes, you need to configure one placeholder in the image catalog:
 

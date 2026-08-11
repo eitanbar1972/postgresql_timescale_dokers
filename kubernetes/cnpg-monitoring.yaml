@@ -1,0 +1,58 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: timescaledb-cluster
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: timescaledb-cluster
+    app.kubernetes.io/part-of: cloudnativepg
+spec:
+  namespaceSelector:
+    matchNames:
+      - timescaledb
+  selector:
+    matchLabels:
+      cnpg.io/cluster: timescaledb-cluster
+  podMetricsEndpoints:
+    - port: metrics
+      interval: 30s
+      scrapeTimeout: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: timescaledb-cluster-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: timescaledb-cluster
+    app.kubernetes.io/part-of: cloudnativepg
+spec:
+  groups:
+    - name: timescaledb-cluster.rules
+      rules:
+        - alert: CNPGInstanceDown
+          expr: cnpg_collector_up{cluster="timescaledb-cluster"} == 0
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: CloudNativePG instance is unavailable
+            description: "Instance {{ $labels.pod }} in cluster timescaledb-cluster has been unavailable for more than two minutes."
+
+        - alert: CNPGReplicationLagHigh
+          expr: cnpg_pg_replication_lag{cluster="timescaledb-cluster"} > 300
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: CloudNativePG replication lag is high
+            description: "Instance {{ $labels.pod }} is more than five minutes behind the primary."
+
+        - alert: CNPGMetricsCollectionError
+          expr: cnpg_collector_last_collection_error{cluster="timescaledb-cluster"} == 1
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: CloudNativePG metrics collection is failing
+            description: "The metrics collector on {{ $labels.pod }} has reported errors for five minutes."
