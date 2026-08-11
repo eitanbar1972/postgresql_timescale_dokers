@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  pg2-primary:
+    image: bitnami/postgresql:17
+    container_name: pg2-primary
+    environment:
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=ChangeMe2
+      - POSTGRESQL_DATABASE=postgres
+      - POSTGRESQL_REPLICATION_MODE=master
+      - POSTGRESQL_REPLICATION_USER=repl_user
+      - POSTGRESQL_REPLICATION_PASSWORD=repl_pass2
+    ports:
+      - "55433:5432"
+    volumes:
+      - pgcluster2_primary_data:/bitnami/postgresql
+
+  pg2-replica:
+    image: bitnami/postgresql:17
+    container_name: pg2-replica
+    depends_on:
+      - pg2-primary
+    environment:
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=ChangeMe2
+      - POSTGRESQL_DATABASE=postgres
+      - POSTGRESQL_REPLICATION_MODE=replica
+      - POSTGRESQL_REPLICATION_USER=repl_user
+      - POSTGRESQL_REPLICATION_PASSWORD=repl_pass2
+      - POSTGRESQL_MASTER_HOST=pg2-primary
+      - POSTGRESQL_MASTER_PORT_NUMBER=5432
+    volumes:
+      - pgcluster2_replica_data:/bitnami/postgresql
+
+volumes:
+  pgcluster2_primary_data: {}
+  pgcluster2_replica_data: {}

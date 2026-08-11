@@ -54,6 +54,15 @@ Where to pick up next
 - Primary in-progress task: `Create manifests for two additional CNPG clusters` — continue editing and add manifests for `timescaledb-cluster-2` and `timescaledb-cluster-3` under `kubernetes/`.
 - After manifests are complete: run `kubectl apply -f kubernetes/cluster-timescaledb-2.yaml -n timescaledb` and `kubectl apply -f kubernetes/cluster-timescaledb-3.yaml -n timescaledb`.
 
+Update: user requested two ordinary PostgreSQL Docker clusters (not CNPG). Created two Docker Compose stacks under `docker/pgclusters/cluster1` and `docker/pgclusters/cluster2`.
+
+Next steps for these stacks:
+- Start Cluster1: `docker compose -f docker/pgclusters/cluster1/docker-compose.yml up -d`
+- Start Cluster2: `docker compose -f docker/pgclusters/cluster2/docker-compose.yml up -d`
+- Connect with psql: `psql -h localhost -p 55432 -U postgres` (Cluster1) or `-p 55433` (Cluster2).
+
+Marking the in-progress task as completed locally (create docker stacks). Update the TODOs accordingly when you want to run them.
+
 Notes and safety
 - Only one task is intentionally marked `in-progress` to preserve a clear single point of work for the agent.
 - When that manifest work finishes, update this file to mark it `completed` and set the next task to `in-progress`.
