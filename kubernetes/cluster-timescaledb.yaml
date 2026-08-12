@@ -36,6 +36,10 @@ spec:
       auto_explain.log_nested_statements: "on"
       auto_explain.log_timing: "off"
       auto_explain.sample_rate: "0.25"
+      # pgaudit settings - enable as desired
+      pgaudit.log: "all"
+      pgaudit.log_catalog: "on"
+      pgaudit.log_level: "log"
       cron.database_name: postgres
       cron.timezone: Asia/Jerusalem
       cron.use_background_workers: "on"
@@ -63,6 +67,11 @@ spec:
         - CREATE EXTENSION IF NOT EXISTS hypopg;
 
   monitoring:
+    customQueriesConfigMap:
+      - name: cnpg-default-monitoring
+        key: queries
+      - name: cnpg-advanced-monitoring
+        key: queries
     enablePodMonitor: false
     metricsQueriesTTL: 30
 

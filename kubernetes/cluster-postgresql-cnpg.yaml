@@ -1,0 +1,73 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ImageCatalog
+metadata:
+  name: postgresql-official
+  namespace: default
+spec:
+  images:
+    - major: 17
+      image: ghcr.io/cloudnative-pg/postgresql:17.6-system-trixie
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgresql-cluster-1
+  namespace: default
+spec:
+  instances: 2
+  monitoring:
+    customQueriesConfigMap:
+      - name: cnpg-default-monitoring
+        key: queries
+      - name: cnpg-advanced-monitoring
+        key: queries
+  imageCatalogRef:
+    apiGroup: postgresql.cnpg.io
+    kind: ImageCatalog
+    name: postgresql-official
+    major: 17
+  enableSuperuserAccess: true
+  bootstrap:
+    initdb:
+      database: app
+      owner: app
+  postgresql:
+    parameters:
+      max_connections: "100"
+      shared_buffers: 256MB
+      work_mem: 16MB
+      wal_level: logical
+  storage:
+    size: 1Gi
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgresql-cluster-2
+  namespace: default
+spec:
+  instances: 2
+  monitoring:
+    customQueriesConfigMap:
+      - name: cnpg-default-monitoring
+        key: queries
+      - name: cnpg-advanced-monitoring
+        key: queries
+  imageCatalogRef:
+    apiGroup: postgresql.cnpg.io
+    kind: ImageCatalog
+    name: postgresql-official
+    major: 17
+  enableSuperuserAccess: true
+  bootstrap:
+    initdb:
+      database: app
+      owner: app
+  postgresql:
+    parameters:
+      max_connections: "100"
+      shared_buffers: 256MB
+      work_mem: 16MB
+      wal_level: logical
+  storage:
+    size: 1Gi

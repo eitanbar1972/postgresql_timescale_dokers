@@ -5,18 +5,19 @@ Purpose: record current progress and precise next steps so work can be resumed l
 Repository state
 
 High-level TODO snapshot
-High-level TODO snapshot
 - Build Docker image: not-started
 - Verify image exists locally: not-started
 - Run container for Postgres (smoke test): not-started
-- Run local container for Postgres: not-started
+- Run local container for Postgres: completed (docker-compose clusters started)
 - Apply CNPG cluster manifest: not-started
 - Port-forward CNPG primary: completed (local port 15432)
 - Connect with pgAdmin: completed (pgAdmin on localhost:8080)
 - Push to GitHub: completed
-- Create manifests for two additional CNPG clusters: in-progress (started: 2026-08-11)
+- Create manifests for two additional CNPG clusters: deferred
+- Create manifests for two additional CNPG clusters: completed (2026-08-11)
 - Add TASKS.md describing steps to deploy and verify clusters: completed
-- Apply new clusters to kind and verify readiness: not-started
+- Apply new clusters to kind and verify readiness: completed (2026-08-11)
+- Deploy Prometheus and Grafana monitoring for all CNPG clusters: in-progress (2026-08-11)
 
 Active resources
   - CNPG primary svc `timescaledb-cluster-rw` -> localhost:15432
@@ -49,19 +50,39 @@ kubectl port-forward svc/timescaledb-cluster-pgadmin4 8080:80 -n timescaledb
 ```
 
 Where to pick up next
-  - `Build Docker image` (or `Run local container for Postgres`) depending on your priority.
-Where to pick up next
-- Primary in-progress task: `Create manifests for two additional CNPG clusters` — continue editing and add manifests for `timescaledb-cluster-2` and `timescaledb-cluster-3` under `kubernetes/`.
-- After manifests are complete: run `kubectl apply -f kubernetes/cluster-timescaledb-2.yaml -n timescaledb` and `kubectl apply -f kubernetes/cluster-timescaledb-3.yaml -n timescaledb`.
+- Primary next task: finish monitoring rollout verification after Grafana and the Prometheus operator complete their initial image pulls in the `monitoring` namespace.
+- Secondary next task: build the custom TimescaleDB/CNPG operand image only if you want to replace placeholder image references in the repo manifests.
 
-Update: user requested two ordinary PostgreSQL Docker clusters (not CNPG). Created two Docker Compose stacks under `docker/pgclusters/cluster1` and `docker/pgclusters/cluster2`.
+Update: user requested two ordinary PostgreSQL Docker clusters (not CNPG). Created and verified two Docker Compose stacks under `docker/pgclusters/cluster1` and `docker/pgclusters/cluster2` using the official `postgres:17` image with primary/replica replication bootstrap scripts.
 
 Next steps for these stacks:
-- Start Cluster1: `docker compose -f docker/pgclusters/cluster1/docker-compose.yml up -d`
-- Start Cluster2: `docker compose -f docker/pgclusters/cluster2/docker-compose.yml up -d`
+- Cluster1 is running: `docker compose -f docker/pgclusters/cluster1/docker-compose.yml up -d`
+- Cluster2 is running: `docker compose -f docker/pgclusters/cluster2/docker-compose.yml up -d`
 - Connect with psql: `psql -h localhost -p 55432 -U postgres` (Cluster1) or `-p 55433` (Cluster2).
+- Replicas verified: `pg1-replica` and `pg2-replica` both returned `pg_is_in_recovery() = true` on 2026-08-11.
 
-Marking the in-progress task as completed locally (create docker stacks). Update the TODOs accordingly when you want to run them.
+Current verified runtime state on 2026-08-11
+- Docker containers running: `pg1-primary`, `pg1-replica`, `pg2-primary`, `pg2-replica`, and existing `timescaledb`.
+- Host ports: Cluster1 primary on `localhost:55432`, Cluster2 primary on `localhost:55433`, existing TimescaleDB on `localhost:5433`.
+- Kubernetes CNPG clusters in namespace `default` are healthy:
+  - `timescaledb-cluster` -> `READY 2/2`
+  - `postgresql-cluster-1` -> `READY 2/2`
+  - `postgresql-cluster-2` -> `READY 2/2`
+- Added manifests:
+  - `kubernetes/cluster-postgresql-cnpg.yaml` for the two regular PostgreSQL CNPG clusters using the official `ghcr.io/cloudnative-pg/postgresql:17.6-system-trixie` image catalog.
+  - `kubernetes/monitoring-namespace.yaml`
+  - updated `kubernetes/cnpg-monitoring.yaml`
+  - updated `kubernetes/grafana-dashboards-configmap.yaml`
+  - updated `kubernetes/monitoring-values.yaml`
+- Monitoring namespace resources now exist:
+  - Services: `monitoring-grafana`, `monitoring-kube-prometheus-prometheus`, `monitoring-kube-prometheus-operator`, `monitoring-kube-prometheus-alertmanager`
+  - PodMonitors: `timescaledb-cluster`, `postgresql-cluster-1`, `postgresql-cluster-2`, `cnpg-controller-manager`
+  - PrometheusRule: `cnpg-cluster-alerts`
+- Monitoring rollout status at handoff:
+  - `kube-prometheus-stack` Helm release `monitoring` is `deployed`
+  - `monitoring-kube-state-metrics` and `monitoring-prometheus-node-exporter` are running
+  - Grafana and the Prometheus operator were still completing initial image pulls when work paused
+- Note: no repository `TODO` file was present when resuming work; only `TASK_STATUS.md` was found.
 
 Notes and safety
 - Only one task is intentionally marked `in-progress` to preserve a clear single point of work for the agent.

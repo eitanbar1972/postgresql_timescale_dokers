@@ -1,6 +1,26 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
+  name: cnpg-controller-manager
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: cnpg-controller-manager
+    app.kubernetes.io/part-of: cloudnativepg
+spec:
+  namespaceSelector:
+    matchNames:
+      - cnpg-system
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cloudnative-pg
+  podMetricsEndpoints:
+    - port: metrics
+      interval: 30s
+      scrapeTimeout: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
   name: timescaledb-cluster
   namespace: monitoring
   labels:
@@ -9,7 +29,7 @@ metadata:
 spec:
   namespaceSelector:
     matchNames:
-      - timescaledb
+      - default
   selector:
     matchLabels:
       cnpg.io/cluster: timescaledb-cluster
@@ -19,40 +39,78 @@ spec:
       scrapeTimeout: 10s
 ---
 apiVersion: monitoring.coreos.com/v1
-kind: PrometheusRule
+kind: PodMonitor
 metadata:
-  name: timescaledb-cluster-alerts
+  name: postgresql-cluster-1
   namespace: monitoring
   labels:
-    app.kubernetes.io/name: timescaledb-cluster
+    app.kubernetes.io/name: postgresql-cluster-1
+    app.kubernetes.io/part-of: cloudnativepg
+spec:
+  namespaceSelector:
+    matchNames:
+      - default
+  selector:
+    matchLabels:
+      cnpg.io/cluster: postgresql-cluster-1
+  podMetricsEndpoints:
+    - port: metrics
+      interval: 30s
+      scrapeTimeout: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: postgresql-cluster-2
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: postgresql-cluster-2
+    app.kubernetes.io/part-of: cloudnativepg
+spec:
+  namespaceSelector:
+    matchNames:
+      - default
+  selector:
+    matchLabels:
+      cnpg.io/cluster: postgresql-cluster-2
+  podMetricsEndpoints:
+    - port: metrics
+      interval: 30s
+      scrapeTimeout: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cnpg-cluster-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: cnpg-cluster-alerts
     app.kubernetes.io/part-of: cloudnativepg
 spec:
   groups:
-    - name: timescaledb-cluster.rules
+    - name: cnpg-clusters.rules
       rules:
         - alert: CNPGInstanceDown
-          expr: cnpg_collector_up{cluster="timescaledb-cluster"} == 0
+          expr: cnpg_collector_up == 0
           for: 2m
           labels:
             severity: critical
           annotations:
             summary: CloudNativePG instance is unavailable
-            description: "Instance {{ $labels.pod }} in cluster timescaledb-cluster has been unavailable for more than two minutes."
-
+            description: "Instance {{ $labels.pod }} in cluster {{ $labels.cluster }} has been unavailable for more than two minutes."
         - alert: CNPGReplicationLagHigh
-          expr: cnpg_pg_replication_lag{cluster="timescaledb-cluster"} > 300
+          expr: cnpg_pg_replication_lag > 300
           for: 5m
           labels:
             severity: warning
           annotations:
             summary: CloudNativePG replication lag is high
-            description: "Instance {{ $labels.pod }} is more than five minutes behind the primary."
-
+            description: "Instance {{ $labels.pod }} in cluster {{ $labels.cluster }} is more than five minutes behind the primary."
         - alert: CNPGMetricsCollectionError
-          expr: cnpg_collector_last_collection_error{cluster="timescaledb-cluster"} == 1
+          expr: cnpg_collector_last_collection_error == 1
           for: 5m
           labels:
             severity: warning
           annotations:
             summary: CloudNativePG metrics collection is failing
-            description: "The metrics collector on {{ $labels.pod }} has reported errors for five minutes."
+            description: "The metrics collector on {{ $labels.pod }} in cluster {{ $labels.cluster }} has reported errors for five minutes."

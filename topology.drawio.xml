@@ -1,0 +1,163 @@
+<mxfile host="app.diagrams.net" modified="2026-08-11T23:59:00.000Z" agent="Codex" version="24.7.17">
+  <diagram id="topology-diagram" name="Topology">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2200" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="docker_host" value="Windows Docker Host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="520" height="700" as="geometry"/>
+        </mxCell>
+        <mxCell id="kind_cluster" value="kind Kubernetes Cluster" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="580" y="20" width="1580" height="980" as="geometry"/>
+        </mxCell>
+        <mxCell id="docker_pg1p" value="pg1-primary&#xa;postgres:17&#xa;localhost:55432" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="50" y="80" width="200" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="docker_pg1r" value="pg1-replica&#xa;postgres:17" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="300" y="80" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="docker_pg2p" value="pg2-primary&#xa;postgres:17&#xa;localhost:55433" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="50" y="190" width="200" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="docker_pg2r" value="pg2-replica&#xa;postgres:17" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="300" y="190" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="docker_tsdb" value="timescaledb&#xa;timescale/timescaledb:latest-pg18&#xa;localhost:5433" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="50" y="320" width="430" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="docker_kindcp" value="kind-control-plane&#xa;kindest/node:v1.36.1&#xa;127.0.0.1:63597-&gt;6443" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="50" y="460" width="200" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="docker_dcp" value="desktop-control-plane&#xa;kindest/node:v1.36.1&#xa;127.0.0.1:19385-&gt;6443" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="280" y="460" width="200" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="docker_dworker" value="desktop-worker&#xa;kindest/node:v1.36.1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="50" y="580" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="docker_mirror" value="kind-registry-mirror&#xa;healthy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="280" y="580" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="docker_cloudp" value="kind-cloud-provider&#xa;docker/desktop-cloud-provider-kind:v0.6.0" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="50" y="660" width="430" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="ns_cnpg" value="cnpg-system" style="swimlane;rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="620" y="60" width="300" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="cnpg_operator" value="cnpg-cloudnative-pg operator&#xa;Pod: cnpg-cloudnative-pg-7d855d69bb-ks92f" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="ns_cnpg">
+          <mxGeometry x="20" y="40" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="ns_default" value="default namespace" style="swimlane;rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="620" y="210" width="850" height="740" as="geometry"/>
+        </mxCell>
+        <mxCell id="cluster_ts" value="timescaledb-cluster&#xa;CNPG cluster&#xa;Primary: timescaledb-cluster-2" style="swimlane;rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="ns_default">
+          <mxGeometry x="20" y="40" width="250" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="ts1" value="timescaledb-cluster-1&#xa;Replica pod" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;" vertex="1" parent="cluster_ts">
+          <mxGeometry x="20" y="40" width="210" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="ts2" value="timescaledb-cluster-2&#xa;Primary pod" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;" vertex="1" parent="cluster_ts">
+          <mxGeometry x="20" y="100" width="210" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="tssvc" value="Services:&#xa;timescaledb-cluster-rw&#xa;timescaledb-cluster-ro&#xa;timescaledb-cluster-r&#xa;timescaledb-cluster-pgadmin4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;" vertex="1" parent="cluster_ts">
+          <mxGeometry x="20" y="170" width="210" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="cluster_pg1" value="postgresql-cluster-1&#xa;CNPG cluster&#xa;Primary: postgresql-cluster-1-1" style="swimlane;rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" vertex="1" parent="ns_default">
+          <mxGeometry x="300" y="40" width="250" height="260" as="geometry"/>
+        </mxCell>
+        <mxCell id="pg11" value="postgresql-cluster-1-1&#xa;Primary pod" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="cluster_pg1">
+          <mxGeometry x="20" y="40" width="210" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="pg12" value="postgresql-cluster-1-2&#xa;Replica pod" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="cluster_pg1">
+          <mxGeometry x="20" y="100" width="210" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="pg1svc" value="Services:&#xa;postgresql-cluster-1-rw&#xa;postgresql-cluster-1-ro&#xa;postgresql-cluster-1-r" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="cluster_pg1">
+          <mxGeometry x="20" y="170" width="210" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="cluster_pg2" value="postgresql-cluster-2&#xa;CNPG cluster&#xa;Primary: postgresql-cluster-2-1" style="swimlane;rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" vertex="1" parent="ns_default">
+          <mxGeometry x="580" y="40" width="250" height="260" as="geometry"/>
+        </mxCell>
+        <mxCell id="pg21" value="postgresql-cluster-2-1&#xa;Primary pod" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="cluster_pg2">
+          <mxGeometry x="20" y="40" width="210" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="pg22" value="postgresql-cluster-2-2&#xa;Replica pod" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="cluster_pg2">
+          <mxGeometry x="20" y="100" width="210" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="pg2svc" value="Services:&#xa;postgresql-cluster-2-rw&#xa;postgresql-cluster-2-ro&#xa;postgresql-cluster-2-r" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="cluster_pg2">
+          <mxGeometry x="20" y="170" width="210" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="pgadmin" value="pgAdmin pod&#xa;timescaledb-cluster-pgadmin4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="ns_default">
+          <mxGeometry x="300" y="340" width="250" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="ns_monitoring" value="monitoring namespace" style="swimlane;rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1510" y="210" width="610" height="740" as="geometry"/>
+        </mxCell>
+        <mxCell id="prom_operator" value="Prometheus Operator&#xa;monitoring-kube-prometheus-operator" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="ns_monitoring">
+          <mxGeometry x="20" y="40" width="250" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="prometheus" value="Prometheus&#xa;prometheus-monitoring-kube-prometheus-prometheus-0&#xa;Service: monitoring-kube-prometheus-prometheus" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="ns_monitoring">
+          <mxGeometry x="20" y="150" width="250" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="grafana" value="Grafana&#xa;monitoring-grafana&#xa;Service: monitoring-grafana" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="ns_monitoring">
+          <mxGeometry x="320" y="150" width="250" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="alertmanager" value="Alertmanager&#xa;alertmanager-monitoring-kube-prometheus-alertmanager-0&#xa;Service: monitoring-kube-prometheus-alertmanager" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="ns_monitoring">
+          <mxGeometry x="20" y="280" width="250" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="ksm" value="kube-state-metrics&#xa;monitoring-kube-state-metrics" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="ns_monitoring">
+          <mxGeometry x="320" y="280" width="250" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="node_exporter" value="node-exporter&#xa;monitoring-prometheus-node-exporter" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="ns_monitoring">
+          <mxGeometry x="320" y="370" width="250" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="podmonitors" value="PodMonitors + PrometheusRules&#xa;- cnpg-controller-manager&#xa;- timescaledb-cluster&#xa;- postgresql-cluster-1&#xa;- postgresql-cluster-2&#xa;- cnpg-cluster-alerts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="ns_monitoring">
+          <mxGeometry x="20" y="410" width="550" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_pg1" value="replication" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="docker_pg1p" target="docker_pg1r">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_pg2" value="replication" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="docker_pg2p" target="docker_pg2r">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_kind" value="hosts cluster" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="docker_kindcp" target="kind_cluster">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_cnpg_ts" value="manages" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="cnpg_operator" target="cluster_ts">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_cnpg_pg1" value="manages" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="cnpg_operator" target="cluster_pg1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_cnpg_pg2" value="manages" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="cnpg_operator" target="cluster_pg2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_promop_prom" value="reconciles" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="prom_operator" target="prometheus">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_promop_alert" value="reconciles" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="prom_operator" target="alertmanager">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_prom_grafana" value="datasource" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="prometheus" target="grafana">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_podmon_prom" value="scrape config" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="podmonitors" target="prometheus">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_ksm_prom" value="metrics" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="ksm" target="prometheus">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_node_prom" value="metrics" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="node_exporter" target="prometheus">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_ts_prom" value="CNPG metrics" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="cluster_ts" target="prometheus">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_pg1_prom" value="CNPG metrics" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="cluster_pg1" target="prometheus">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_pg2_prom" value="CNPG metrics" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="cluster_pg2" target="prometheus">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

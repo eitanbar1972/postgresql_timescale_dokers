@@ -1,0 +1,132 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cnpg-advanced-monitoring
+  namespace: default
+  labels:
+    cnpg.io/reload: ""
+data:
+  queries: |
+    custom_sessions_by_state:
+      query: |
+        SELECT
+          COALESCE(datname, 'unknown') AS datname,
+          COALESCE(state, 'unknown') AS state,
+          COUNT(*) AS sessions
+        FROM pg_catalog.pg_stat_activity
+        WHERE backend_type = 'client backend'
+          AND pid <> pg_catalog.pg_backend_pid()
+        GROUP BY COALESCE(datname, 'unknown'), COALESCE(state, 'unknown')
+      metrics:
+        - datname:
+            usage: "LABEL"
+            description: "Database name"
+        - state:
+            usage: "LABEL"
+            description: "Session state"
+        - sessions:
+            usage: "GAUGE"
+            description: "Number of sessions by state"
+    custom_wait_events:
+      query: |
+        SELECT
+          COALESCE(datname, 'unknown') AS datname,
+          COALESCE(wait_event_type, 'none') AS wait_event_type,
+          COALESCE(wait_event, 'none') AS wait_event,
+          COUNT(*) AS sessions
+        FROM pg_catalog.pg_stat_activity
+        WHERE backend_type = 'client backend'
+          AND pid <> pg_catalog.pg_backend_pid()
+          AND wait_event_type IS NOT NULL
+        GROUP BY
+          COALESCE(datname, 'unknown'),
+          COALESCE(wait_event_type, 'none'),
+          COALESCE(wait_event, 'none')
+      metrics:
+        - datname:
+            usage: "LABEL"
+            description: "Database name"
+        - wait_event_type:
+            usage: "LABEL"
+            description: "Wait event type"
+        - wait_event:
+            usage: "LABEL"
+            description: "Wait event name"
+        - sessions:
+            usage: "GAUGE"
+            description: "Number of sessions waiting on each event"
+    custom_blocking_overview:
+      primary: true
+      query: |
+        WITH activity AS (
+          SELECT
+            COALESCE(datname, 'unknown') AS datname,
+            COALESCE(state, 'unknown') AS state,
+            CASE
+              WHEN query_start IS NULL THEN 0
+              ELSE EXTRACT(EPOCH FROM (pg_catalog.clock_timestamp() - query_start))
+            END AS query_age_seconds,
+            CASE
+              WHEN xact_start IS NULL THEN 0
+              ELSE EXTRACT(EPOCH FROM (pg_catalog.clock_timestamp() - xact_start))
+            END AS xact_age_seconds,
+            pg_catalog.cardinality(pg_catalog.pg_blocking_pids(pid)) AS blocker_count
+          FROM pg_catalog.pg_stat_activity
+          WHERE backend_type = 'client backend'
+            AND pid <> pg_catalog.pg_backend_pid()
+        )
+        SELECT
+          datname,
+          COUNT(*) FILTER (WHERE blocker_count > 0) AS blocked_sessions,
+          COUNT(*) FILTER (WHERE state = 'idle in transaction') AS idle_in_transaction_sessions,
+          MAX(query_age_seconds) FILTER (WHERE blocker_count > 0) AS max_blocked_query_age_seconds,
+          MAX(xact_age_seconds) FILTER (WHERE state = 'idle in transaction') AS max_idle_in_transaction_age_seconds
+        FROM activity
+        GROUP BY datname
+      metrics:
+        - datname:
+            usage: "LABEL"
+            description: "Database name"
+        - blocked_sessions:
+            usage: "GAUGE"
+            description: "Number of blocked sessions"
+        - idle_in_transaction_sessions:
+            usage: "GAUGE"
+            description: "Number of sessions idle in transaction"
+        - max_blocked_query_age_seconds:
+            usage: "GAUGE"
+            description: "Age in seconds of the oldest blocked query"
+        - max_idle_in_transaction_age_seconds:
+            usage: "GAUGE"
+            description: "Age in seconds of the oldest idle-in-transaction session"
+    custom_long_running_activity:
+      query: |
+        SELECT
+          COALESCE(datname, 'unknown') AS datname,
+          MAX(
+            CASE
+              WHEN xact_start IS NULL THEN 0
+              ELSE EXTRACT(EPOCH FROM (pg_catalog.clock_timestamp() - xact_start))
+            END
+          ) AS longest_transaction_seconds,
+          MAX(
+            CASE
+              WHEN state = 'active' AND query_start IS NOT NULL
+                THEN EXTRACT(EPOCH FROM (pg_catalog.clock_timestamp() - query_start))
+              ELSE 0
+            END
+          ) AS longest_active_query_seconds
+        FROM pg_catalog.pg_stat_activity
+        WHERE backend_type = 'client backend'
+          AND pid <> pg_catalog.pg_backend_pid()
+        GROUP BY COALESCE(datname, 'unknown')
+      metrics:
+        - datname:
+            usage: "LABEL"
+            description: "Database name"
+        - longest_transaction_seconds:
+            usage: "GAUGE"
+            description: "Age in seconds of the longest open transaction"
+        - longest_active_query_seconds:
+            usage: "GAUGE"
+            description: "Age in seconds of the longest active query"
